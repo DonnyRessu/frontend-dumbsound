@@ -1,6 +1,27 @@
 import { IoMdArrowDropdownCircle } from "react-icons/io";
+import { API } from "../config/api";
+import { useQuery } from "react-query";
+import { useContext } from "react";
+import { UserContext } from "../context/userContext";
+import moment from "moment";
 
 const ListTransaction = () => {
+  const [state] = useContext(UserContext);
+  const { data: transaction } = useQuery("transactionDetailCache", async () => {
+    const response = await API.get(`/transactions`);
+    return response.data.data;
+  });
+  console.log("sndaj", transaction);
+
+  const dateConvert = (date) => {
+    const startDate = moment().format("YYYY-MM-DD");
+    const endDate = moment(date);
+    const duration = moment.duration(endDate.diff(startDate));
+    console.log(startDate, endDate);
+    const days = duration.asDays();
+
+    return days.toFixed();
+  };
   return (
     <>
       <div className="px-20 bg-black py-10">
@@ -20,18 +41,24 @@ const ListTransaction = () => {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>1</td>
-                <td>Anjink</td>
-                <td>20 hari</td>
-                <td>active</td>
-                <td>success</td>
-                <td className="relative">
-                  <button className="pl-3">
-                    <IoMdArrowDropdownCircle className="text-2xl text-sky-500" />
-                  </button>
-                </td>
-              </tr>
+              {transaction?.map((trans, id) => (
+                <tr key={id}>
+                  <td>{trans.id}</td>
+                  <td>{trans.user.fullname}</td>
+                  <td>
+                    {/* {new Date(trans.due_date).getTime() -
+                      new Date().getTime() * 1000 * 60 * 60 * 24} */}
+                    {dateConvert(trans.user.due_date) + " " + "hari"}
+                  </td>
+                  <td>{trans.user.status_user}</td>
+                  <td>{trans.status_payment}</td>
+                  <td className="relative">
+                    <button className="pl-3">
+                      <IoMdArrowDropdownCircle className="text-2xl text-sky-500" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
