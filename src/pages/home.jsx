@@ -16,7 +16,7 @@ const Home = () => {
     } else if (state.user.status_user == "active") {
       setMusic(music);
     } else {
-      alert("bayar dulu goblok!!!");
+      alert("Silakan Melakukan Pembayaran");
     }
   };
   console.log("user date", new Date(state.user.due_date).getTime());
